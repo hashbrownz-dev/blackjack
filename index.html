@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang = "en-us">
+    <head>
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+        <meta charset = "utf-8">
+        <title>City Pop Blackjack</title>
+        <meta name = "author" content = "Hashbrownz">
+        <meta name = "description" content = "Classic Video Blackjack with a City Pop Aesthetic">
+        <link rel = "stylesheet" type = "text/css" href = "bj.css">
+        <link rel="stylesheet" href="https://use.typekit.net/zik2yve.css">
+    </head>
+    <body>
+        <div class = "board">
+            <div class = "playarea">
+                <!-- HELP BUTTON -->
+                <button type = "button" class = "help">?</button>
+                <!-- DEALER'S HAND -->
+                <div class = "hand" id = "dealer">
+                    <h1 class = "score">DEALER: ???</h1>
+                    <div class = "cards"></div>
+                    <h2 class = "outcome hidden">WINNER</h2>
+                </div>
+                <!-- PLAYER'S HAND -->
+                <div class = "hand" id = "player">
+                    <h1 class = "score">PLAYER: 0</h1>
+                    <div class = "cards">
+                        <!--<div class = "card">
+                            <div>
+                                <p>Q</p>
+                                <img class = "mini" src = "images/Suits-Mini-01.png">
+                            </div>
+                            <img src = "images/Suits-01.png">
+                            <p>Queen</p>
+                        </div>-->
+                    </div>
+                    <h2 class = "outcome hidden">WINNER</h2>
+                </div>
+                <!-- CONTROL AREA -->
+                <div class = "control">
+                    <div class = "interface">
+                        <button type = "button" class = "action deal">DEAL</button>
+                        <button type = "button" class = "action" id = "a">BET ONE</button>
+                        <button type = "button" class = "action" id = "b">BET MAX</button>
+                        <button type = "button" class = "action" id = "c">CLEAR BET</button>
+                    </div>
+                    <div class = "status">
+                        <p class = "win hidden"></p>
+                        <div class = "score-board">
+                            <div class = "property">
+                                <p class = "name">BET:</p>
+                                <p class = "value" id = "bet"></p>
+                            </div>
+                            <div class = "property">
+                                <p class = "name">CREDITS:</p>
+                                <p class = "value" id = "credits"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type = "text/javascript" src = "bj.js"></script>
+    </body>
+</html>
