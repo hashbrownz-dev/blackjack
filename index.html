@@ -13,61 +13,72 @@
         <div id = "playarea">
             <button type = "button" id = "help">?</button>
             <div class = "hand" id = "dealer">
-                <div class = "score">
-                    <p class = "hscore" id = "dscore">dealer: 17</p>
+                <div>
+                    <p class = "score" id = "score-dealer">dealer: 17</p>
                 </div>
                 <div class = "cards">
-                    <!--
-                    <div class = card>
+                    <div class = "card">
                         <div>
-                            <p class = "face">A</p>
+                            <p class = "rank">A</p>
                             <img src = "images/Suits_Club-Mini.png">
                         </div>
                         <img src = "images/Suits_Club.png">
                     </div>
-                    <div class = card>
+                    <div class = "card" style = "left: 40px">
                         <div>
-                            <p class = "face">K</p>
+                            <p class = "rank">K</p>
                             <img src = "images/Suits_Diamond-Mini.png">
                         </div>
                         <img src = "images/Suits_Diamond.png">
                     </div>
-                    -->
-                    <p class = 'results' id = 'dresults'></p>
                 </div>
+                <p class = "result w" id = "result-dealer">WINNER</p>
             </div>
             <div class = "hand" id = "player">
-                <div class = "cards">
-                    <!--
-                    <div class = card>
+                <div>
+                    <p class = "score" id = "score-player">player: 21</p>
+                </div>
+                <div class = "cards" style = "width: 220px">
+                    <div class = "card">
                         <div>
-                            <p class = "face">A</p>
+                            <p class = "rank">A</p>
                             <img src = "images/Suits_Club-Mini.png">
                         </div>
                         <img src = "images/Suits_Club.png">
                     </div>
-                    <div class = card>
+                    <div class = "card" style = "left: 40px">
                         <div>
-                            <p class = "face">K</p>
+                            <p class = "rank">K</p>
                             <img src = "images/Suits_Diamond-Mini.png">
                         </div>
                         <img src = "images/Suits_Diamond.png">
                     </div>
-                    -->
-                    <p class = 'results' id = 'presults'></p>
+                    <div class = "card" style = "left: 80px">
+                        <div>
+                            <p class = "rank">A</p>
+                            <img src = "images/Suits_Club-Mini.png">
+                        </div>
+                        <img src = "images/Suits_Club.png">
+                    </div>
+                    <div class = "card" style = "left: 120px">
+                        <div>
+                            <p class = "rank">K</p>
+                            <img src = "images/Suits_Diamond-Mini.png">
+                        </div>
+                        <img src = "images/Suits_Diamond.png">
+                    </div>
                 </div>
-                <div class = "score">
-                    <p id = "won">won 100</p>
-                    <p id = "bet">bet: 100</p>
-                    <p class = "hscore" id = "pscore">player: 21</p>
-                    <p id = "credits">credits: 100</p>
-                </div>
+                <p class = "result l" id = "result-player">loser</p>
+            </div>
+            <div class = "credits">
+                <p id = "bet">bet: 100</p>
+                <p id = "credits">credits: 100</p>
             </div>
             <div id = "controls">
                 <button type = "button" id = "buttonA">Bet one</button>
                 <button type = "button" id = "buttonB">Bet max</button>
-                <button type = "button" id = "buttonC">deal</button>
-                <button type = "button" id = "buttonD">clear bet</button>
+                <button type = "button" id = "buttonC">Clear bet</button>
+                <button type = "button" id = "buttonD">Deal</button>
             </div>
         </div>
         <footer>

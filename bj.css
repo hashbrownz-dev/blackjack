@@ -8,7 +8,6 @@
 }
 
 html, main, body{
-    height: 100%;
     width: 100%;
     margin: 0;
     font-family: aaux-next, sans-serif;
@@ -17,10 +16,12 @@ html, main, body{
 }
 
 p{
+    text-transform: uppercase;
     margin: 0;
 }
 
 footer{
+    display: none;
     width: fit-content;
     margin: 0 auto;
     color: var(--cpbj-teal);
@@ -34,7 +35,6 @@ footer > a{
     width: 100%;
     max-width: 640px;
     margin: 0 auto;
-    height: 560px;
 }
 
 #help{
@@ -61,35 +61,26 @@ footer > a{
 /* === SCORE ZONES === */
 
 .score{
-    display: flex;
-    flex-wrap: wrap;
+    text-align: center;
 }
-.score > p{
+
+/* === CREDITS === */
+
+.credits{
+    margin: 10px;
+    display:flex;
+}
+.credits > p{
     width: 50%;
 }
-.hscore{
-    text-align: left;
-}
-#bet{
-    order: 1;
-
-    text-align: right;
-}
-#dscore{
-    width:100%;
-}
-#pscore{
-    order: 2;
-}
 #credits{
-    order: 3;
     text-align: right;
 }
 
 /* === HANDS ===*/
 .hand{
-    height: 37%;
     margin: 10px;
+    position: relative;
 }
 
 /*=== CARDS ===*/
@@ -99,8 +90,8 @@ footer > a{
     height: 140px;
     margin: 10px auto;
     position: relative;
+    overflow: hidden;
 }
-
 .card{
     height: 140px;
     width: 100px;
@@ -109,7 +100,15 @@ footer > a{
     color: black;
     background-color: white;
     border-radius: 5px;
+    box-shadow: -1px 0 black;
     position: absolute;
+}
+.dealt{
+    animation-duration: 0.5s;
+    animation-name: dealcard;
+}
+.expand{
+    transition: width 250ms;
 }
 .card > div{
     width: fit-content;
@@ -118,7 +117,7 @@ footer > a{
     display: block;
     margin: 0 auto;
 }
-.face{
+.rank{
     font-family: all-round-gothic, sans-serif;
     font-size: 1.25rem;
     margin: 0;
@@ -127,6 +126,9 @@ footer > a{
 .facedown{
     background-color: var(--bj-purple);
     border: 8px solid white;
+}
+.facedown > div, .facedown > img{
+    display: none;
 }
 
 /*=== CONTROLS ===*/
@@ -152,25 +154,90 @@ button:active{
     background-color: var(--bj-accent);
 }
 button:disabled{
-    display: none;
+    opacity: 0;
 }
 #controls{
+    width: 100%;
+    max-width: 320px;
+    margin: 10px auto;
     display: flex;
     flex-wrap: wrap;
 }
-/*=== OUTCOME ===*/
+#buttonA{
+    order: 1;
+}
+#buttonB{
+    order: 3;
+}
+#buttonC{
+    order: 2;
+}
+#buttonD{
+    order: 4;
+}
+/*=== RESULTS ===*/
 
-.outcome{
-    padding: 8px;
-    margin: 0;
-    background-color: black;
+.result{
     font-family: all-round-gothic, sans-serif;
-    font-size: 24px;
+    font-size: 1.2rem;
+    font-weight: 400;
+    text-transform: uppercase;
     text-align: center;
+    width: 40%;
+    margin-left: 30%;
+    box-sizing: border-box;
+    border: 2px solid;
+    box-shadow: 0 0 0 1px var(--bj-purple);
     position: absolute;
-    bottom: 16px;
+    top: 120px;
+    background-color: var(--bj-purple);
+    animation-duration: 1s;
+    animation-name: textreveal;
 }
 
+.bj{
+    color: var(--bj-accent);
+}
+.w{
+    color: var(--bj-magenta);
+}
+.l{
+    color: var(--bj-main);
+}
 .hidden{
     display:none;
+}
+
+@media screen and (min-width: 640px){
+    #controls{
+        max-width: 640px;
+    }
+    #buttonB{
+        order: 2;
+    }
+    #buttonC{
+        order: 3;
+    }
+}
+
+/*=== ANIMATIONS ===*/
+
+@keyframes textreveal{
+    from{
+        top:144px;
+        opacity: 0;
+    }
+    to{
+        top:120px;
+        opacity: 1;
+    }
+}
+
+@keyframes dealcard{
+    from{
+        top: -100%;
+    }
+    to{
+        top: 0;
+    }
 }

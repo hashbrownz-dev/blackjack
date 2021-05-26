@@ -1,241 +1,308 @@
-/*
+/* BLACKJACK v2.0 */
 
-==== CITY POP BLACKJACK ====
-=======   ver  1.0   =======
-============================
-
-A simple game of Blackjack with a distinct city pop retro aesthetic.  This game utilizes HTML, CSS, and Vanilla Javascript.  All graphics and animations are handled with HTML and CSS.
-
-*/
-//Class Declarations
+//CLASSES
 
 class Card{
-    constructor(suit, fvalue, facedown){
+    constructor(suit, rank){
         this.suit = suit;
-        this.fvalue = fvalue;
-        this.facedown = facedown;
+        this.rank = rank;
     }
-    get name(){
-        if(!this.facedown){
-            return `${this.fvalue} of ${this.suit}`;
-        }else{
-            return `?`;
+    get score(){
+        switch(this.rank){
+            case 'king':
+            case 'queen':
+            case 'jack':
+            case '10':
+                return 10;
+            case '9':
+            case '8':
+            case '7':
+            case '6':
+            case '5':
+            case '4':
+            case '3':
+            case '2':
+                return parseInt(this.rank);
+            case 'ace':
+                return 1;
+            default:
+                return 0;
         }
     }
 }
-
 class Deck{
-    constructor(deck){
-        this.deck = deck;
-    }
-
-    shuffle(){
-        for(let i = this.deck.length - 1; i >= 0; i--){
-            let k = Math.floor(Math.random()*i);
-            let temp = this.deck[k];
-            this.deck[k] = this.deck[i];
-            this.deck[i] = temp;
-        }
-        return this.deck;
-    }
-    draw(){
-        let c = this.deck.pop(); //remove the last element and store it in c
-        this.deck.unshift(c); //place the last element at the beginning of the array
-        return c; //return c
-    }
-    static populate(){
-        let suits = _suits,
-            faces = _cardfaces,
-            d = [];
-        for(let s = suits.length - 1; s >= 0; s--){
-            for(let f = faces.length - 1; f >= 0; f--){
-                d.push(new Card(suits[s], faces[f], false));
+    constructor(){
+        const ranks = ['ace','king','queen','jack','10','9','8','7','6','5','4','3','2'],
+            suits = ['clubs', 'diamonds', 'spades', 'hearts'];
+        this.cards = [];
+        for(let s = suits.length-1; s >= 0; s--){
+            for(let r = ranks.length - 1; r >=0; r--){
+                this.cards.push(new Card(suits[s], ranks[r]));
             }
         }
-        return new Deck(d);
+    }
+    shuffle(){
+        for(let i = this.cards.length - 1; i >= 0; i--){
+            let k = Math.floor(Math.random() * i);
+            let temp = this.cards[k];
+            this.cards[k] = this.cards[i];
+            this.cards[i] = temp;
+        }
+    }
+    draw(){
+        let c = this.cards.pop();   //remove the last element and store it in a variable
+        this.cards.unshift(c);          //place the last element at the beginning of the array
+        return c;
     }
 }
-
 class Hand{
-    constructor(cards, score){
-        this.cards = cards; //an array of card objects
-        this.score = score; //total points in hand
+    constructor(){
+        this.cards = [];
     }
-    hit(deck = _deck){
-        //draw() a card from the Deck and add it to this instances hand
-        let c = deck.draw();
-        this.cards.push(c);
-        this.score = this.tallyScore;
-        //return c;
-    }
-    get tallyScore(){
+    get score(){
         let score = 0;
-        let aces = false;
+        let aces = 0;
         for(let card of this.cards){
-            let cvalue = getScore(card);
-            if(cvalue == 1) aces++;
-            score += getScore(card);
+            if(card.rank == 'ace') aces++;
+            score+=card.score;
         }
-        if(aces > 0){
-            if(score <= 11) score += 10;
-        }
+        if(aces && score <= 11)score += 10;
         return score;
     }
-    get busted(){
-        if (this.score > 21){
-            return true;
-        } else {
-            return false;
+}
+
+//CONTROLS
+const controlsBet = [
+    makeButton('bet one', 'buttonA', function(){bet = betOne(); document.getElementById('bet').innerHTML = `bet: ${bet}`}),
+    makeButton('bet max', 'buttonB', function(){bet = betMax(); document.getElementById('bet').innerHTML = `bet: ${bet}`}),
+    makeButton('clear bet', 'buttonC', function(){bet = 1; document.getElementById('bet').innerHTML = `bet: ${bet}`}),
+    makeButton('deal', 'buttonD', dealGame)
+];
+const controlsPlay = [
+    makeButton('hit', 'buttonA', hit),
+    makeButton('double','buttonB', double),
+    makeButton('', 'buttonC'),
+    makeButton('stand', 'buttonD', stand)
+];
+//The C button doesn't have a function during the play phase, however we use it as filler to maintain consistency with the button layout.
+controlsPlay[2].disabled = true;
+
+function makeButton(text, id, action){
+    let button = document.createElement('button');
+    button.type = 'button';
+    button.id = id;
+    button.innerHTML = text;
+    button.addEventListener('click', action);
+    return button;
+}
+
+//GAME PHASES
+//PHASE 1 BET
+const maxbet = 20;
+let bet = 1, credits = 100;
+
+function betOne(){
+    let b = bet + 1;
+    return b > betMax() ? betMax() : b;
+}
+function betMax(){
+    return Math.min(maxbet, credits);
+}
+function phaseBet(){
+    let controls = document.getElementById('controls');
+    while(controls.firstChild){
+        controls.removeChild(controls.firstChild);
+    }
+    for(let button of controlsBet){
+        controls.appendChild(button);
+    }
+    if(bet > maxbet || bet > credits)bet = betMax();
+    document.getElementById('bet').innerHTML = `bet: ${bet}`;
+}
+phaseBet();
+
+//PHASE 2 DEAL
+const dealer = new Hand,
+    player = new Hand,
+    deck = new Deck;
+
+function dealGame(){
+    //clear results
+    let results = document.querySelectorAll('.result');
+    for(let element of results){
+        element.remove();
+    }
+    //clear controls
+    let controls = document.getElementById('controls');
+    while(controls.firstChild){
+        controls.removeChild(controls.firstChild);
+    }
+
+    credits -= bet;
+    document.getElementById('credits').innerHTML = `credits: ${credits}`;
+    deck.shuffle();
+    player.cards = [];
+    dealer.cards = [];
+    let i = 0;
+    function animateDeal(){
+        i++;
+        if(i > 4){
+            if(player.score == 21 && dealer.score < 21)return blackjack();
+            if(dealer.score == 21)return phaseResult();
+            return phasePlay();;
         }
+        if(i % 2){
+            //player
+            player.cards.push(deck.draw());
+            displayHand(player, document.querySelector('#player > .cards'));
+            document.getElementById('score-player').innerHTML = `player: ${player.score}`;
+        }else{
+            //dealer
+            dealer.cards.push(deck.draw());
+            displayHand(dealer, document.querySelector('#dealer > .cards'));
+            //keep the first card facedown
+            let firstcard = document.querySelector('#dealer > .cards > .card');
+            firstcard.className = 'card facedown';
+            if(i < 4)firstcard.className += ' dealt';
+            document.getElementById('score-dealer').innerHTML = `dealer: ??`;
+        }
+        setTimeout(animateDeal, 250);
     }
-    static deal(deck){
-        return new Hand([],0);
+    animateDeal();
+}
+
+//PHASE 3 PLAY
+function phasePlay(){
+    let controls = document.getElementById('controls');
+    for(let button of controlsPlay){
+        controls.appendChild(button);
+    }
+}
+function hit(){
+    player.cards.push(deck.draw());
+    displayHand(player, document.querySelector('#player > .cards'));
+    document.getElementById('score-player').innerHTML = `player: ${player.score}`;
+    if(player.score > 21)bust();
+}
+function double(){
+    bet += bet;
+    document.getElementById('bet').innerHTML = `bet: ${bet}`;
+    hit();
+    stand();
+}
+function stand(){
+    function playdealer(){
+        if(dealer.score < 17){
+            dealer.cards.push(deck.draw());
+            displayHand(dealer, document.querySelector('#dealer > .cards'));
+            document.getElementById('score-dealer').innerHTML = `dealer: ${dealer.score}`;
+        }else{
+            return phaseResult();
+        }
+        setTimeout(playdealer, 250);
+    }
+    document.querySelector('.facedown').className = 'card';
+    document.getElementById('score-dealer').innerHTML = `dealer: ${dealer.score}`;
+    setTimeout(playdealer, 250);
+}
+//PHASE 4 RESULTS
+
+function displayResult(ptext, pclass, dtext, dclass){
+    let p = document.createElement('p'),
+        d = document.createElement('p');
+    p.className = 'result ' + pclass;
+    p.innerHTML = ptext;
+    document.getElementById('player').appendChild(p);
+
+    if(dtext){
+        d.className = 'result ' +dclass;
+        d.innerHTML = dtext;
+        document.getElementById('dealer').appendChild(d);
     }
 }
 
-//Global constants
-const _cardfaces = ["Ace","King","Queen","Jack","10","9","8","7","6","5","4","3","2"],
-    _suits = ['Clubs', 'Diamonds', 'Spades', 'Hearts'],
-    _startingcredits = 100,
-    _maxbet = 20,
-    _player = Hand.deal(),
-    _dealer = Hand.deal(),
-    _deck = Deck.populate();
-
-//Global variables
-let credits = _startingcredits,
-    currentbet = 1,
-    winnings = 0;
-
-//FUNCTIONS
-
-//SCORING
-
-function getScore(card){ //returns the point value of a single card
-    let score;
-    switch (card.fvalue){
-        case 'King':
-        case 'Queen':
-        case 'Jack':
-        case '10':
-            score = 10;
-            break;
-        case '9':
-        case '8':
-        case '7':
-        case '6':
-        case '5':
-        case '4':
-        case '3':
-        case '2':
-            score = parseInt(card.fvalue);
-            break;
-        case 'Ace':
-            score = 1;
-            break;
-        default:
-            score = 0;
-            break;
-    }
-    return score;
+function blackjack(){
+    credits += bet * 3;
+    document.getElementById('credits').innerHTML = `credits: ${credits}`;
+    displayResult('blackjack','bj','loser','l');
+    phaseBet();
 }
+function bust(){
+    //Display BUST for the player.  The Dealer's hand and status remain hidden.
+    displayResult('bust','bj');
+    phaseBet();
+}
+function phaseResult(){
+    //PUSH
+    if(player.score == dealer.score){
+        credits += bet;
+        document.getElementById('credits').innerHTML = `credits: ${credits}`;
+        displayResult('push','l','push','l')
+        return phaseBet();
+    }
+    //WIN
+    if((player.score > dealer.score && player.score < 22) || dealer.score > 21){
+        credits += bet*2;
+        document.getElementById('credits').innerHTML = `credits: ${credits}`;
+        displayResult('winner','w','loser','l');
+        return phaseBet();
+    }
+    //LOSE
+    displayResult('loser','l','winner','w');
+    phaseBet();
+}
+//DRAWING
 
-//INTERFACE
-const _btn_help = document.getElementById('help'),  //HELP BUTTON
-    _score_d = document.getElementById('dscore'),   //DEALER SCORE ELEMENT
-    _score_p = document.getElementById('pscore'),   //PLAYER SCORE ELEMENT
-    _hand_d = document.querySelector('#dealer > .cards'),   //DEALER HAND
-    _hand_p = document.querySelector('#player > .cards'),   //PLAYER HAND
-    _result_d = document.getElementById('dresults'),    //DEALER RESULTS
-    _result_p = document.getElementById('presults'),    //PLAYER RESULTS
-    _btn_A = document.getElementById('buttonA'),    //BUTTON A
-    _btn_B = document.getElementById('buttonB'),    //BUTTON B
-    _btn_C = document.getElementById('buttonC'),    //BUTTON C
-    _btn_D = document.getElementById('buttonD'),    //BUTTON D
-    _bet = document.getElementById('bet'),  //CURRENT BET
-    _won = document.getElementById('won'),  //CREDITS WON
-    _credits = document.getElementById('credits');  //CURRENT CREDITS
-
-//TEXT
-const _txt_win = `won: ${winnings}`,
-    _txt_bet = `bet: ${currentbet}`,
-    _txt_score_d = `dealer: ${_dealer.score}`,
-    _txt_credits = `credits: ${credits}`;
-
-//CREATES AND RETURNS A CARD ELEMENT
-function displayCard(card){
+function displayCard(card, facedown = false){
     const container = document.createElement('div');
     container.className = 'card';
 
-    if(card.facedown == true){
+    if(facedown == true){
         container.className = 'card facedown';
         return container;
     }
-    const topleft = document.createElement('div'),
-        imgSmall = document.createElement('img'),
-        imgLarge = document.createElement('img'),
-        face = document.createElement('p');
 
-    face.className = 'face';
-    topleft.appendChild(face);
-    topleft.appendChild(imgSmall);
-    container.appendChild(topleft);
-    container.appendChild(imgLarge);
+    const div = document.createElement('div'),  // The container for rank and suit_sm
+        rank = document.createElement('p'),     // The rank of the card
+        suit_sm = document.createElement('img'),// A small image of the suit
+        suit_lg = document.createElement('img');// A large image of the suit
 
-    //Check Face Value (fvalue)
-    switch(card.fvalue){
-        case 'Ace':
-        case 'King':
-        case 'Queen':
-        case 'Jack':
-            face.innerHTML = card.fvalue[0];
+    rank.className = 'rank';
+    div.appendChild(rank);
+    div.appendChild(suit_sm);
+    container.appendChild(div);
+    container.append(suit_lg);
+
+    //Check Rank
+    switch(card.rank){
+        case 'ace':
+        case 'king':
+        case 'queen':
+        case 'jack':
+            rank.innerHTML = card.rank[0].toUpperCase();
             break;
-        case '10':
-            face.innerHTML = card.fvalue;
-            break;
-        case '9':
-            face.innerHTML = card.fvalue;
-            break;
-        case '8':
-            face.innerHTML = card.fvalue;
-            break;
-        case '7':
-            face.innerHTML = card.fvalue;
-            break;
-        case '6':
-            face.innerHTML = card.fvalue;
-            break;
-        case '5':
-            face.innerHTML = card.fvalue;
-            break;
-        case '4':
-            face.innerHTML = card.fvalue;
-            break;
-        case '3':
-            face.innerHTML = card.fvalue;
-            break;
-        case '2':
-            face.innerHTML = card.fvalue;
-            break;
+        default:
+            rank.innerHTML = card.rank;
+            break;  
     }
     //Check Suit
-    //For each case change imgSmall and imgLarge
+    //For each case change suit_sm and suit_lg
     switch(card.suit){
-        case 'Clubs':
-            imgSmall.src = 'images/Suits_Club-Mini.png';
-            imgLarge.src = 'images/Suits_Club.png';
+        case 'clubs':
+            suit_sm.src = 'images/Suits_Club-Mini.png';
+            suit_lg.src = 'images/Suits_Club.png';
             break;
-        case 'Diamonds':
-            imgSmall.src = 'images/Suits_Diamond-Mini.png';
-            imgLarge.src = 'images/Suits_Diamond.png';
+        case 'diamonds':
+            suit_sm.src = 'images/Suits_Diamond-Mini.png';
+            suit_lg.src = 'images/Suits_Diamond.png';
             break;
-        case 'Spades':
-            imgSmall.src = 'images/Suits_Spade-Mini.png';
-            imgLarge.src = 'images/Suits_Spade.png';
+        case 'spades':
+            suit_sm.src = 'images/Suits_Spade-Mini.png';
+            suit_lg.src = 'images/Suits_Spade.png';
             break;
-        case 'Hearts':
-            imgSmall.src = 'images/Suits_Heart-Mini.png';
-            imgLarge.src = 'images/Suits_Heart.png';
+        case 'hearts':
+            suit_sm.src = 'images/Suits_Heart-Mini.png';
+            suit_lg.src = 'images/Suits_Heart.png';
             break;
     }
     //Return the card element:
@@ -251,215 +318,13 @@ function displayHand(player, element){
     }
     //REDRAW
     let new_width = Math.max(60 + (hand.length * 40), 140);
+    (new_width > 140) ? element.className = 'cards expand' : element.className = 'cards';
     element.style.width = `${new_width}px`;
     for(let i=0; i<hand.length; i++){
         let cardelement = displayCard(hand[i]);
         let offset = i * 40;
         element.appendChild(cardelement);
         cardelement.style.left = `${offset}px`;
+        if(i == hand.length - 1)cardelement.className += ' dealt';
     }
 }
-//DRAW THE SCORE ELEMENT
-function displayScore(){
-    _score_d.innerHTML = `dealer: ${_dealer.score}`;
-    _score_p.innerHTML = `player: ${_player.score}`;
-}
-//DRAW THE BET ELEMENT
-function displayBet(){
-    _bet.innerHTML = `bet: ${currentbet}`;
-}
-//DRAW RESULTS
-function displayResult(){
-    _hand_d.appendChild(_result_d);
-    _hand_p.appendChild(_result_p);
-}
-//PLAYER CONTROLS
-
-function hit(){
-    //AFTER HITTING, THE PLAYER CAN NO LONGER DOUBLE DOWN
-    _btn_C.disabled = true;
-    _player.hit();
-    displayHand(_player,_hand_p);
-    displayScore();
-    if(_player.busted){
-        bust();
-    }
-}
-
-function stand(){
-    //SHIFTS PLAY FROM THE PLAYER TO THE DEALER
-    //DISABLE PLAYER CONTROLS
-    //REVEAL FACE DOWN CARD
-    _dealer.cards[0].facedown = false;
-    displayHand(_dealer,_hand_d);
-    //DEALER HITS UNTIL THEY REACH SOFT 17
-    while(_dealer.score < 17){
-        _dealer.hit();
-    }
-    displayHand(_dealer,_hand_d);
-    displayScore();
-    getWinner();
-    placeBet();
-}
-
-function doubleDown(){
-    credits -= currentbet;
-    currentbet = currentbet * 2;
-    displayBet();
-    hit();
-    if(_player.busted){
-        bust();
-    }else{
-        stand();
-    }
-}
-
-function betOne(){
-    if(currentbet < _maxbet && credits > 0)currentbet+=1;
-    displayBet();
-}
-
-function betMax(){
-    currentbet = credits<_maxbet ? credits : _maxbet;
-    displayBet();
-}
-
-function betClear(){
-    currentbet = 1;
-    displayBet();
-}
-
-//PLAY PHASES
-//BETTING PHASE
-function placeBet(){
-    //CHANGE BUTTONS A,B, & C
-    _btn_A.innerHTML = 'bet one';
-    _btn_B.innerHTML = 'bet max';
-    _btn_C.innerHTML = 'deal';
-    //REMOVE PLAY FUNCTIONS
-    _btn_A.removeEventListener('click',hit);
-    _btn_B.removeEventListener('click',stand);
-    _btn_C.removeEventListener('click',doubleDown);
-    //ATTACH BET FUNCTIONS
-    _btn_A.addEventListener('click',betOne);
-    _btn_B.addEventListener('click',betMax);
-    _btn_C.addEventListener('click',dealGame);
-    _btn_D.addEventListener('click',betClear);
-    //ENABLE BUTTON C & D
-    _btn_C.disabled = false;
-    _btn_D.disabled = false;
-}
-//PLAY PHASE
-function startPlay(){
-    //CHANGE BUTTONS A,B, & C
-    _btn_A.innerHTML = 'hit';
-    _btn_B.innerHTML = 'stand';
-    _btn_C.innerHTML = 'double';
-    //REMOVE BET FUNCTIONS
-    _btn_A.removeEventListener('click',betOne);
-    _btn_B.removeEventListener('click',dealGame);
-    _btn_C.removeEventListener('click',betMax);
-    //ATTACH PLAY FUNCTIONS
-    _btn_A.addEventListener('click',hit);
-    _btn_B.addEventListener('click',stand);
-    _btn_C.addEventListener('click',doubleDown);
-    //DISABLE BUTTON D
-    _btn_D.disabled = true;
-}
-//RESET
-function reset(){
-    //REMOVE ALL CARDS FROM PLAYER HANDS
-    _player.cards = [];
-    _dealer.cards = [];
-    displayHand(_dealer, _hand_d);
-    displayHand(_player, _hand_p);
-    for(let card of _deck.deck){
-        card.facedown = false;
-    }
-    //CLEAR SCORES
-    _player.score = 0;
-    _dealer.score = 0;
-    displayScore();
-}
-
-//GET RESULTS
-function bust(){
-    _result_d.innerHTML = 'winner';
-    _result_p.innerHTML = 'bust!'
-    displayResult();
-    placeBet();
-}
-
-function getWinner(){
-    //CHECK FOR BLACKJACK
-    if(_player.score == 21 && _player.cards.length == 2 && _dealer.score != 21){
-        _result_d.innerHTML = 'loser';
-        _result_p.innerHTML = 'blackjack!';
-        credits += currentbet * 3;
-        _credits.innerHTML = `credits: ${credits}`;
-        displayResult();
-        return;
-    }
-    if(_dealer.busted || _player.score > _dealer.score){
-        _result_d.innerHTML = _dealer.busted ? 'bust!' : 'loser';
-        _result_p.innerHTML = 'winner';
-        credits += currentbet*2;
-        _credits.innerHTML = `credits: ${credits}`;
-        displayResult();
-        return;
-    }
-    if(_dealer.score == _player.score){
-        _result_d.innerHTML = 'push';
-        _result_p.innerHTML = 'push';
-        credits += currentbet;
-        _credits.innerHTML = `credits: ${credits}`;
-        displayResult();
-        return;
-    }
-    _result_d.innerHTML = 'winner';
-    _result_p.innerhtml = 'loser';
-    displayResult();
-}
-
-//DEAL GAME
-
-function dealGame(){
-    reset();
-    startPlay();
-
-    //TAKE THE PLAYERS MONEY
-
-    credits-=currentbet;
-    _credits.innerHTML = `credits: ${credits}`;
-
-    //BEGIN PLAY
-    //SHUFFLE THE DECK
-
-    _deck.shuffle();
-
-    //DEAL EACH HAND
-
-    for(let i=0; i < 2; i++){
-        _player.hit();
-        _dealer.hit();
-    }
-    _dealer.cards[0].facedown = true;
-    displayHand(_dealer, _hand_d);
-    displayHand(_player, _hand_p);
-
-    //CHECK FOR BLACKJACK
-
-    if(_player.score == 21){
-        getWinner();
-        placeBet();
-    }
-
-    //DISPLAY SCORES
-    displayScore();
-    displayScore();
-}
-
-//INIT
-reset();
-displayBet();
-placeBet();
