@@ -148,8 +148,8 @@ function dealGame(){
         i++;
         if(i > 4){
             if(player.score == 21 && dealer.score < 21)return blackjack();
-            if(dealer.score == 21)return phaseResult();
-            return phasePlay();;
+            if(dealer.score == 21)return stand();
+            return phasePlay();
         }
         if(i % 2){
             //player
@@ -185,10 +185,12 @@ function hit(){
     if(player.score > 21)bust();
 }
 function double(){
+    credits -= bet;
+    document.getElementById('credits').innerHTML = `credits: ${credits}`;
     bet += bet;
     document.getElementById('bet').innerHTML = `bet: ${bet}`;
     hit();
-    stand();
+    if(player.score <= 21) stand();
 }
 function stand(){
     function playdealer(){
@@ -220,10 +222,34 @@ function displayResult(ptext, pclass, dtext, dclass){
         document.getElementById('dealer').appendChild(d);
     }
 }
+function displayWinnings(winnings){
+    //add the winnings to the credits in increments of 1 over a set period of time.
+    //we need a callback function that we call in intervals.  then we'll clear that interval once its up.
+    let w = winnings;
+    //show our little winnings.
+
+    let element = document.createElement('p');
+    element.className = 'winnings';
+    element.innerHTML = `+${w}`;
+    document.querySelector('.credits').appendChild(element);
+    element.addEventListener('animationend', () => {
+        element.remove();
+    });
+
+    function stack(){
+        if (w <= 0){
+            clearInterval(stacker);
+        }else{
+            w--;
+            credits++;
+            document.getElementById('credits').innerHTML = `credits: ${credits}`;
+        }
+    }
+    let stacker = setInterval(stack, 50);
+}
 
 function blackjack(){
-    credits += bet * 3;
-    document.getElementById('credits').innerHTML = `credits: ${credits}`;
+    displayWinnings(bet*3);
     displayResult('blackjack','bj','loser','l');
     phaseBet();
 }
@@ -235,20 +261,22 @@ function bust(){
 function phaseResult(){
     //PUSH
     if(player.score == dealer.score){
-        credits += bet;
-        document.getElementById('credits').innerHTML = `credits: ${credits}`;
+        displayWinnings(bet);
         displayResult('push','l','push','l')
         return phaseBet();
     }
     //WIN
     if((player.score > dealer.score && player.score < 22) || dealer.score > 21){
-        credits += bet*2;
-        document.getElementById('credits').innerHTML = `credits: ${credits}`;
+        displayWinnings(bet*2);
         displayResult('winner','w','loser','l');
         return phaseBet();
     }
     //LOSE
-    displayResult('loser','l','winner','w');
+    if(dealer.score == 21 && dealer.cards.length == 2){
+        displayResult('loser','l','blackjack','bj');    //BJ LOSS
+    }else{
+        displayResult('loser','l','winner','w');    //NORMAL LOSS
+    }
     phaseBet();
 }
 //DRAWING
