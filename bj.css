@@ -112,7 +112,7 @@ footer > a{
     overflow: hidden;
 }
 .card{
-    height: 140px;
+    height: 100%;
     width: 100px;
     box-sizing: border-box;
     padding: 10px;
@@ -230,6 +230,7 @@ button:disabled{
 @media screen and (min-width: 480px) {
     body{
         background-image: url(images/bg/desktop-background.jpg);
+        padding-top: 2.5%;
     }
 }
 
@@ -242,6 +243,12 @@ button:disabled{
     }
     #buttonC{
         order: 3;
+    }
+    body{
+        padding-top: 5%;
+    }
+    #help{
+        top: 10px;
     }
 }
 

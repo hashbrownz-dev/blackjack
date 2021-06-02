@@ -117,6 +117,7 @@ function phaseBet(){
         controls.appendChild(button);
     }
     if(bet > maxbet || bet > credits)bet = betMax();
+    if(bet <= 0) bet = 1;
     document.getElementById('bet').innerHTML = `bet: ${bet}`;
 }
 phaseBet();
@@ -127,48 +128,50 @@ const dealer = new Hand,
     deck = new Deck;
 
 function dealGame(){
-    //clear results
-    let results = document.querySelectorAll('.result');
-    for(let element of results){
-        element.remove();
-    }
-    //clear controls
-    let controls = document.getElementById('controls');
-    while(controls.firstChild){
-        controls.removeChild(controls.firstChild);
-    }
+    if(credits){
+        //clear results
+        let results = document.querySelectorAll('.result');
+        for(let element of results){
+            element.remove();
+        }
+        //clear controls
+        let controls = document.getElementById('controls');
+        while(controls.firstChild){
+            controls.removeChild(controls.firstChild);
+        }
 
-    credits -= bet;
-    document.getElementById('credits').innerHTML = `credits: ${credits}`;
-    deck.shuffle();
-    player.cards = [];
-    dealer.cards = [];
-    let i = 0;
-    function animateDeal(){
-        i++;
-        if(i > 4){
-            if(player.score == 21 && dealer.score < 21)return blackjack();
-            if(dealer.score == 21)return stand();
-            return phasePlay();
+        credits -= bet;
+        document.getElementById('credits').innerHTML = `credits: ${credits}`;
+        deck.shuffle();
+        player.cards = [];
+        dealer.cards = [];
+        let i = 0;
+        function animateDeal(){
+            i++;
+            if(i > 4){
+                if(player.score == 21 && dealer.score < 21)return blackjack();
+                if(dealer.score == 21)return stand();
+                return phasePlay();
+            }
+            if(i % 2){
+                //player
+                player.cards.push(deck.draw());
+                displayHand(player, document.querySelector('#player > .cards'));
+                document.getElementById('score-player').innerHTML = `player: ${player.score}`;
+            }else{
+                //dealer
+                dealer.cards.push(deck.draw());
+                displayHand(dealer, document.querySelector('#dealer > .cards'));
+                //keep the first card facedown
+                let firstcard = document.querySelector('#dealer > .cards > .card');
+                firstcard.className = 'card facedown';
+                if(i < 4)firstcard.className += ' dealt';
+                document.getElementById('score-dealer').innerHTML = `dealer: ??`;
+            }
+            setTimeout(animateDeal, 250);
         }
-        if(i % 2){
-            //player
-            player.cards.push(deck.draw());
-            displayHand(player, document.querySelector('#player > .cards'));
-            document.getElementById('score-player').innerHTML = `player: ${player.score}`;
-        }else{
-            //dealer
-            dealer.cards.push(deck.draw());
-            displayHand(dealer, document.querySelector('#dealer > .cards'));
-            //keep the first card facedown
-            let firstcard = document.querySelector('#dealer > .cards > .card');
-            firstcard.className = 'card facedown';
-            if(i < 4)firstcard.className += ' dealt';
-            document.getElementById('score-dealer').innerHTML = `dealer: ??`;
-        }
-        setTimeout(animateDeal, 250);
+        animateDeal();
     }
-    animateDeal();
 }
 
 //PHASE 3 PLAY
@@ -176,6 +179,13 @@ function phasePlay(){
     let controls = document.getElementById('controls');
     for(let button of controlsPlay){
         controls.appendChild(button);
+    }
+    //disable double if credits < bet
+    const doubleButton = document.getElementById('buttonB');
+    if(credits < bet){
+        doubleButton.disabled = true;
+    }else{
+        doubleButton.disabled = false;
     }
 }
 function hit(){
