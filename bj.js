@@ -177,8 +177,11 @@ function phasePlay(){
     for(let button of controlsPlay){
         controls.appendChild(button);
     }
+    controlsPlay[1].disabled = false;
 }
 function hit(){
+    //disable the double down button
+    controlsPlay[1].disabled = true;
     player.cards.push(deck.draw());
     displayHand(player, document.querySelector('#player > .cards'));
     document.getElementById('score-player').innerHTML = `player: ${player.score}`;
