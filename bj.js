@@ -180,9 +180,7 @@ function phasePlay(){
     for(let button of controlsPlay){
         controls.appendChild(button);
     }
-<<<<<<< HEAD
     controlsPlay[1].disabled = false;
-=======
     //disable double if credits < bet
     const doubleButton = document.getElementById('buttonB');
     if(credits < bet){
@@ -190,7 +188,6 @@ function phasePlay(){
     }else{
         doubleButton.disabled = false;
     }
->>>>>>> 7ffab07d622b6080e4cc7b0da97bbdbfcba1d659
 }
 function hit(){
     //disable the double down button
