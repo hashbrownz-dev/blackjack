@@ -139,6 +139,11 @@ function dealGame(){
         while(controls.firstChild){
             controls.removeChild(controls.firstChild);
         }
+        //attach play controls
+        for(let button of controlsPlay){
+            controls.appendChild(button);
+            button.disabled = 'true';
+        }
 
         credits -= bet;
         document.getElementById('credits').innerHTML = `credits: ${credits}`;
@@ -176,19 +181,18 @@ function dealGame(){
 
 //PHASE 3 PLAY
 function phasePlay(){
-    let controls = document.getElementById('controls');
+    //enable controls
     for(let button of controlsPlay){
-        controls.appendChild(button);
+        button.disabled = false;
     }
+    controlsPlay[2].disabled = true;
     //disable double if credits < bet
     const doubleButton = document.getElementById('buttonB');
-    if(credits < bet){
-        doubleButton.disabled = true;
-    }else{
-        doubleButton.disabled = false;
-    }
+    if(credits < bet) doubleButton.disabled = true;
 }
 function hit(){
+    //disable the double down button
+    controlsPlay[1].disabled = true;
     player.cards.push(deck.draw());
     displayHand(player, document.querySelector('#player > .cards'));
     document.getElementById('score-player').innerHTML = `player: ${player.score}`;

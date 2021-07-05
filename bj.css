@@ -3,6 +3,7 @@
     --bj-accent: #ffc54d;
     --bj-magenta: #d32064;
     --bj-purple: #22020e;
+    --bj-teal: #40ffde;
     font-size: 18px;
     text-transform: capitalize;
 }
@@ -16,13 +17,49 @@ html, main, body{
     background-color: black;
 }
 
+header{
+    width: 100%;
+    height: 48px;
+    position: absolute;
+    top:0;
+    z-index: 1;
+}
+
+h1{
+    text-align: center;
+    text-transform: uppercase;
+    font-family: all-round-gothic, sans-serif;
+    font-size: 48px;
+    font-weight: 550;
+    margin: 10px 50%;
+    color: var(--bj-accent);
+    order: 2;
+}
+
+h2{
+    margin: 0.5em;
+    font-family: all-round-gothic, sans-serif;
+    font-size: 2rem;
+    color: var(--bj-accent);
+    text-transform: uppercase;
+    text-align: center;
+}
+
+h4{
+    margin: 0.5em;
+    font-family: all-round-gothic, sans-serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--bj-accent);
+    text-transform: uppercase;
+    display: none;
+}
+
 body{
-    background-image: url(images/bg/mobile-background.jpg);
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
     box-sizing: border-box;
-    padding-top: 10px;
 }
 
 p{
@@ -32,22 +69,110 @@ p{
 
 footer{
     display: none;
-    width: fit-content;
-    margin: 0 auto;
-    color: var(--cpbj-teal);
+    position: absolute;
+    bottom: 2px;
+    width: 100%;
+    height: 24px;
+    text-align: center;
+    color: var(--bj-main);
 }
 
-footer > a{
-    color: var(--cpbj-pink);
+.homelink{
+    color: var(--bj-magenta);
 }
+
+/* === CAROUSEL === */
+
+.view{
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel{
+    background-image: url(images/bg/desktop-01.jpg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 300%;
+    height: 100%;
+    display: flex;
+    position: relative;
+    right: 0;
+    transition: right 1s;
+}
+
+.slide{
+    width: 100%;
+    overflow: hidden;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-sizing: border-box;
+}
+
+/* === TITLE SCREEN === */
+
+.img-container{
+    margin: 20px auto 10px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.tsuit{
+    height: 7%;
+    margin: 10px 5px 0;
+    margin-bottom: 0;
+    order: 1;
+}
+#luckycat{
+    height: 50%;
+    margin: 0 50%;
+    order: 0;
+}
+#title-menu{
+    max-width: 440px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#title-screen{
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: flex-end;
+    justify-content: center;
+}
+#title-screen > button{
+    height: 48px;
+    width: 200px;
+    margin: 5px;
+    background-color: var(--bj-purple);
+    color: var(--bj-teal);
+    border: 3px solid var(--bj-teal);
+    border-radius: 20px;
+    font-size: 24px;
+    box-sizing: border-box;
+    order: 3;
+}
+/* === GAME === */
 
 #playarea{
     width: 100%;
+    height: 100%;
     max-width: 640px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 #help{
+    opacity: 0;
     height: 32px;
     width: 32px;
     border-radius: 50%;
@@ -59,7 +184,8 @@ footer > a{
     right: 10px;
     z-index: 100;
     transition: background-color 0.5s,
-        color 0.5s;
+        color 0.5s,
+        opacity 1s;
 }
 
 #help:hover{
@@ -72,16 +198,19 @@ footer > a{
 
 .score{
     text-align: center;
+    background-color: rgba(0,0,0,0.5);
 }
 
 /* === CREDITS === */
 
 .credits{
-    margin: 10px;
     overflow: hidden;
+    width: 100%;
+    background-color: rgba(0,0,0,0.5);
 }
 .credits > p{
     display: inline;
+    margin: 0 20px;
 }
 #credits{
     float: right;
@@ -97,8 +226,8 @@ footer > a{
 
 /* === HANDS ===*/
 .hand{
-    margin: 10px;
-    margin-top: 0;
+    height: 35%;
+    width: 100%;
     position: relative;
 }
 
@@ -165,6 +294,7 @@ button{
     font-size: 1rem;
     text-transform: uppercase;
     transition: background-color 0.125s;
+    transition: opacity 0.5s;
 }
 button:hover{
     cursor: pointer;
@@ -178,7 +308,6 @@ button:disabled{
 #controls{
     width: 100%;
     max-width: 320px;
-    margin: 10px auto;
     display: flex;
     flex-wrap: wrap;
 }
@@ -227,14 +356,161 @@ button:disabled{
     display:none;
 }
 
+/* === HOW TO ===*/
+
+#instructions{
+    overflow-y: scroll;
+}
+h3{
+    color: var(--bj-teal);
+    text-transform: uppercase;
+    font-weight: 400;
+}
+strong{
+    color:var(--bj-accent);
+    font-weight: 550;
+    text-transform: uppercase;
+}
+em{
+    color:var(--bj-accent);
+}
+.toc{
+    padding: 0;
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.75);
+}
+li{
+    text-transform: none;
+}
+.toc > li{
+    text-transform: capitalize;
+    padding: 0 0.5em;
+    border-left: 1px solid var(--bj-magenta);
+}
+.toc > li:first-child{
+    border-left:none;
+}
+.toc-link{
+    color: var(--bj-magenta);
+    font-size: 1.1rem;
+    text-decoration: underline;
+}
+.toc-link:hover{
+    cursor:pointer;
+}
+.section{
+    max-width: 620px;
+    padding: 10px 20px;
+    margin: 15px;
+    background-color: var(--bj-purple);
+    border: 1px solid var(--bj-teal);
+}
+.section > p{
+    text-transform: none;
+    margin: 1em 0;
+}
+.btt{
+    color: var(--bj-accent);
+    text-decoration: underline;
+    font-style: italic;
+    text-align: center;
+}
+.btt:hover{
+    cursor:pointer;
+}
+
+/* === TABLE === */
+table{
+    width: 100%;
+    max-width: 500px;
+    margin: 15px auto;
+}
+tr:first-child > th{
+    font-weight: 400;
+    font-style: italic;
+}
+th{
+    width: 7.5%;
+}
+th:first-child{
+    width: 25%;
+    text-align: left;
+}
+td{
+    text-align:center;
+}
+.hit{
+    background-color: var(--bj-accent);
+    color: #000;
+}
+.stand{
+    background-color: var(--bj-main);
+}
+.double{
+    background-color: var(--bj-magenta);
+}
+
 @media screen and (min-width: 480px) {
-    body{
-        background-image: url(images/bg/desktop-background.jpg);
-        padding-top: 2.5%;
-    }
+
 }
 
 @media screen and (min-width: 640px){
+    header{
+        background-color: #000;
+    }
+    h1{
+        font-size: 72px;
+        margin: 20px 50%;
+    }
+    h4{
+        display: block;
+    }
+    #title-screen{
+        background-image: url(images/bg/desktop-01.jpg);
+    }
+    #game{
+        background-image: url(images/bg/desktop-02.jpg);
+    }
+    #instructions{
+        background-image: url(images/bg/desktop-03.jpg);
+    }
+
+    /* === CAROUSEL === */
+
+    .carousel{
+        background-image: none;
+    }
+    .slide{
+        padding-top: 48px;
+    }
+
+    /* === TITLE SCREEN === */
+
+    .img-container{
+        margin: 30px;
+        flex-wrap: nowrap;
+    }
+    .tsuit{
+        height: 11%;
+        margin: 20px;
+        margin-bottom: 0;
+        order: initial;
+    }
+    #luckycat{
+        height: 55%;
+        margin: 0;
+        order: initial;
+    }
+    #title-menu > button{
+        height: fit-content;
+        font-size: 36px;
+        margin: 10px;
+    }
+
+    /* === GAME === */
+
     #controls{
         max-width: 640px;
     }
@@ -244,11 +520,10 @@ button:disabled{
     #buttonC{
         order: 3;
     }
-    body{
-        padding-top: 5%;
-    }
-    #help{
-        top: 10px;
+
+    /* === HOW TO === */
+    .section{
+        margin: 15px auto;
     }
 }
 
